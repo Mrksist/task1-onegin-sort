@@ -27,7 +27,7 @@ int main (const int argc, char** const argv) {
 
     int fd = -1;
 
-    if (StatIsFileExists(cfg.inpfile) == 0) {
+    if (StatIsFileExists (cfg.inpfile) == 0) {
         printf ("Файл %s не существует. Завершение\n", cfg.inpfile);
         return 1;
     }
@@ -99,6 +99,10 @@ int main (const int argc, char** const argv) {
 }
 
 int ReadCommandLineArgs (int argc, char** const argv, OneginConfig* cfg) {
+    assert (argc > 0);
+    assert (argv != 0);
+    assert (cfg != 0);
+
     int opt = -1;
 
     while ((opt = getopt(argc, argv, "hf:C")), opt != -1) {
