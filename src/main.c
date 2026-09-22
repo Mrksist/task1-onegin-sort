@@ -13,7 +13,7 @@ int main (const int argc, char** const argv) {
     int opt = -1;
 
     unsigned outfile_is_stdout = 0;
-    const char* file = "onegin.txt";
+    const char* inpfile = "onegin.txt";
 
     while ((opt = getopt(argc, argv, "hf:C")), opt != -1) {
         switch (opt) {
@@ -25,7 +25,7 @@ int main (const int argc, char** const argv) {
                 return 0;
                 break;
             case 'f':
-                file = optarg;
+                inpfile = optarg;
                 printf ("Передан файл: %s\n", optarg);
                 break;
             case '?':
@@ -39,12 +39,12 @@ int main (const int argc, char** const argv) {
 
     int fd = -1;
 
-    if (StatIsFileExists(file) == 0) {
+    if (StatIsFileExists(inpfile) == 0) {
         printf ("Файл %s не существует. Завершение\n", file);
         return 1;
     }
 
-    fd = open (file, O_RDONLY);
+    fd = open (inpfile, O_RDONLY);
 
     assert(fd != -1);
 
