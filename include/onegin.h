@@ -21,7 +21,7 @@ struct OneginFile {
 //         Main
 // **********************
 
-void PrintUsage (char** argv);
+void PrintUsage (const char* argv_0);
 unsigned CountNumberOfLines (const OneginFile file);
 void DivideIntoLines (OneginFile file);
 

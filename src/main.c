@@ -9,26 +9,39 @@
 
 #include "onegin.h"
 
-int main (int argc, char** argv) {
-    int fd = -1;
+int main (const int argc, char** const argv) {
+    int opt = -1;
 
-    if ((argc >= 4) || 
-        (argc >= 2 && (!strcmp(argv[1], "-h") || !strcmp(argv[1], "--help"))) ||
-        (argc >= 3 && (!strcmp(argv[2], "-h") || !strcmp(argv[2], "--help"))) ||
-        (argc >= 3 && !strcmp(argv[2], "-C"))) 
-    {
-        PrintUsage(argv);
-        exit(0);
+    unsigned outfile_is_stdout = 0;
+    const char* file = "onegin.txt";
+
+    while ((opt = getopt(argc, argv, "hf:C")), opt != -1) {
+        switch (opt) {
+            case 'C':
+                outfile_is_stdout = 1;
+                break;
+            case 'h':
+                PrintUsage(argv[0]);
+                return 0;
+                break;
+            case 'f':
+                file = optarg;
+                printf ("Передан файл: %s\n", optarg);
+                break;
+            case '?':
+                PrintUsage(argv[0]);
+                return 1;
+                break;
+            default:
+                break;
+        }
     }
 
-    const char* file = "onegin.txt"; 
-
-    if (argc > 1) 
-        file = argv[1];
+    int fd = -1;
 
     if (StatIsFileExists(file) == 0) {
         printf ("Файл %s не существует. Завершение\n", file);
-        exit(1);
+        return 1;
     }
 
     fd = open (file, O_RDONLY);
@@ -55,7 +68,7 @@ int main (int argc, char** argv) {
 
     FILE* outfile = 0;
 
-    if (argc == 3 && !strcmp (argv[2], "-C"))
+    if (outfile_is_stdout)
         outfile = stdout;
     else    
         outfile = fopen ("./output.txt", "w");
@@ -97,10 +110,11 @@ int main (int argc, char** argv) {
     free (file_obj.buffer);
 }
 
-void PrintUsage (char** argv) {
-    printf ("Использование: %s [FILE.txt] [-C] \n\n", argv[0]);
-    printf ("[FILE.txt] - Файл для анализа и сортировки\n");
-    printf ("[-C] - Вывод в stdout вместо выходного файла output.txt\n");
+void PrintUsage (const char* argv_0) {
+    printf ("Использование: %s [-f FILE.txt] [-C] [-h] \n\n", argv_0);
+    printf ("-f FILE.txt\t- Файл для анализа и сортировки\n");
+    printf ("-C\t\t- Вывод в stdout вместо выходного файла output.txt\n");
+    printf ("-h\t\t- Это сообщение\n");
 }
 
 unsigned CountNumberOfLines (const OneginFile file) {
