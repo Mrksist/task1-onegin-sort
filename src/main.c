@@ -10,41 +10,29 @@
 #include "onegin.h"
 
 int main (const int argc, char** const argv) {
-    int opt = -1;
+    OneginConfig cfg = {};
+    cfg.outfile_is_stdout = 0;
+    cfg.inpfile = "onegin.txt";
 
-    unsigned outfile_is_stdout = 0;
-    const char* inpfile = "onegin.txt";
+    int cla_code = ReadCommandLineArgs (argc, argv, &cfg);
 
-    while ((opt = getopt(argc, argv, "hf:C")), opt != -1) {
-        switch (opt) {
-            case 'C':
-                outfile_is_stdout = 1;
-                break;
-            case 'h':
-                PrintUsage(argv[0]);
-                return 0;
-                break;
-            case 'f':
-                inpfile = optarg;
-                printf ("Передан файл: %s\n", optarg);
-                break;
-            case '?':
-                PrintUsage(argv[0]);
-                return 1;
-                break;
-            default:
-                break;
-        }
+    if (cla_code == CLA_NEED_HELP) {
+        return 0;
     }
-
-    int fd = -1;
-
-    if (StatIsFileExists(inpfile) == 0) {
-        printf ("Файл %s не существует. Завершение\n", file);
+    if (cla_code == CLA_UNKNOWN_OPTION) {
         return 1;
     }
 
-    fd = open (inpfile, O_RDONLY);
+    assert (cla_code == 0);
+
+    int fd = -1;
+
+    if (StatIsFileExists(cfg.inpfile) == 0) {
+        printf ("Файл %s не существует. Завершение\n", cfg.inpfile);
+        return 1;
+    }
+
+    fd = open (cfg.inpfile, O_RDONLY);
 
     assert(fd != -1);
 
@@ -68,7 +56,7 @@ int main (const int argc, char** const argv) {
 
     FILE* outfile = 0;
 
-    if (outfile_is_stdout)
+    if (cfg.outfile_is_stdout)
         outfile = stdout;
     else    
         outfile = fopen ("./output.txt", "w");
@@ -108,6 +96,34 @@ int main (const int argc, char** const argv) {
 
     free (file_obj.index);
     free (file_obj.buffer);
+}
+
+int ReadCommandLineArgs (int argc, char** const argv, OneginConfig* cfg) {
+    int opt = -1;
+
+    while ((opt = getopt(argc, argv, "hf:C")), opt != -1) {
+        switch (opt) {
+            case 'C':
+                (*cfg).outfile_is_stdout = 1;
+                break;
+            case 'h':
+                PrintUsage(argv[0]);
+                return CLA_NEED_HELP;
+                break;
+            case 'f':
+                (*cfg).inpfile = optarg;
+                printf ("Передан файл: %s\n", optarg);
+                break;
+            case '?':
+                PrintUsage(argv[0]);
+                return CLA_UNKNOWN_OPTION;
+                break;
+            default:
+                break;
+        }
+    }
+
+    return 0;
 }
 
 void PrintUsage (const char* argv_0) {

@@ -4,6 +4,11 @@
 //       Structures
 // **********************
 
+struct OneginConfig {
+    unsigned outfile_is_stdout;
+    const char* inpfile;
+};
+
 struct OneginLine {
     size_t line_size;
     char* line_pointer;
@@ -20,6 +25,10 @@ struct OneginFile {
 // **********************
 //         Main
 // **********************
+
+#define CLA_UNKNOWN_OPTION 11
+#define CLA_NEED_HELP 10
+int ReadCommandLineArgs (int argc, char** const argv, OneginConfig* cfg);
 
 void PrintUsage (const char* argv_0);
 unsigned CountNumberOfLines (const OneginFile file);
