@@ -13,25 +13,25 @@ int main (int argc, char** argv) {
     int fd = -1;
 
     if ((argc >= 4) || 
-        (argc >= 2 && (strcmp(argv[1], "-h") || strcmp(argv[1], "--help"))) ||
-        (argc >= 3 && (strcmp(argv[2], "-h") || strcmp(argv[2], "--help"))) ||
+        (argc >= 2 && (!strcmp(argv[1], "-h") || !strcmp(argv[1], "--help"))) ||
+        (argc >= 3 && (!strcmp(argv[2], "-h") || !strcmp(argv[2], "--help"))) ||
         (argc >= 3 && !strcmp(argv[2], "-C"))) 
     {
         PrintUsage(argv);
         exit(0);
     }
 
-    if (argc == 1) {
-        fd = open ("onegin.txt", O_RDONLY);
-    }
-    else {
-        if (StatIsFileExists(argv[1]) == 0) {
-            printf ("Файл %s не существует. Завершение\n", argv[1]);
-            exit(1);
-        }
+    const char* file = "onegin.txt"; 
 
-        fd = open (argv[1], O_RDONLY);
+    if (argc > 1) 
+        file = argv[1];
+
+    if (StatIsFileExists(file) == 0) {
+        printf ("Файл %s не существует. Завершение\n", file);
+        exit(1);
     }
+
+    fd = open (file, O_RDONLY);
 
     assert(fd != -1);
 
